@@ -4,8 +4,14 @@ import numpy as np
 from math import *
 
 node_1 = Node(1, 0, 0, 0, 0, True, False)
+node_1.dof_x_index = 0
+node_1.dof_y_index = 1
 node_2 = Node(2, 0, 0.4, 0, 0, True, True)
+node_2.dof_x_index = 2
+node_2.dof_y_index = 3
 node_3 = Node(3, 0.3, 0.4, 150, -100, False, False)
+node_3.dof_x_index = 4
+node_3.dof_y_index = 5
 nodes = [node_1, node_2, node_3]
 
 E = 2.10e11
@@ -31,19 +37,19 @@ K[np.ix_(np.array([0, 1,  4, 5]), np.array([0, 1, 4, 5]))] += K3
 # 0 é o índice do GDL
 
 # No 1 tem restrição em X
-K[0,:] = 0
-K[:,0] = 0
-K[0, 0] = 1
+K[node_1.dof_x_index,:] = 0
+K[:,node_1.dof_x_index] = 0
+K[node_1.dof_x_index, node_1.dof_x_index] = 1
 
 # Nó 2 tem em restrição em X
-K[2, :] = 0
-K[:, 2] = 0
-K[2, 2] = 1
+K[node_2.dof_x_index, :] = 0
+K[:, node_2.dof_x_index] = 0
+K[node_2.dof_x_index, node_2.dof_x_index] = 1
 
 # Nó 2 tem restrição em Y
-K[3, :] = 0
-K[:, 3] = 0
-K[3, 3] = 1
+K[node_2.dof_y_index, :] = 0
+K[:, node_2.dof_y_index] = 0
+K[node_2.dof_y_index, node_2.dof_y_index] = 1
 
 # Matriz de forças
 F = np.zeros([1, ndof])
