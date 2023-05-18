@@ -3,6 +3,7 @@ from node import Node
 
 
 class Element:
+    element_number: int
     node_1: Node
     node_2: Node
     area: float
@@ -11,7 +12,8 @@ class Element:
     angle: float
     stiffness_matrix: np.ndarray
 
-    def __init__(self, node_1: Node, node_2: Node, area: float, youngs_module: float) -> None:
+    def __init__(self, element_number: int, node_1: Node, node_2: Node, area: float, youngs_module: float) -> None:
+        self.element_number = element_number
         self.node_1 = node_1
         self.node_2 = node_2
         self.area = area
