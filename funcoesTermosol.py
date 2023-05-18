@@ -54,74 +54,98 @@ def plota(N,Inc):
     plt.grid(True)
     plt.axis('equal')
     plt.show()
+
+
+def convert_xlsx_to_xls(input_file, output_file):
+    import openpyxl
+    from openpyxl.utils.dataframe import dataframe_to_rows    # Load the Excel file
+    wb = openpyxl.load_workbook(input_file)
     
+    # Create a new Workbook for saving in .xls format
+    xls_wb = openpyxl.Workbook()
+    
+    # Copy each sheet to the new Workbook
+    for sheet_name in wb.sheetnames:
+        sheet = wb[sheet_name]
+        xls_sheet = xls_wb.create_sheet(title=sheet_name)
+        
+        for row in sheet.iter_rows(values_only=True):
+            xls_sheet.append(row)
+    
+    # Remove the default sheet created by openpyxl
+    del xls_wb['Sheet']
+    
+    # Save the new Workbook as .xls file
+    xls_wb.save(output_file)
+
+
+
 def importa(entradaNome):
-    
     import numpy as np
-    import xlrd
-    
-    arquivo = xlrd.open_workbook(entradaNome)
+    import pandas as pd
+    # Read the Excel file
     
     ################################################## Ler os nos
-    nos = arquivo.sheet_by_name('Nos')
+    nos = pd.read_excel(entradaNome, sheet_name='Nos')
+    
     
     # Numero de nos
-    nn = int(nos.cell(1,3).value)
+    nn = int(nos.iat[0, 3])
                  
     # Matriz dos nós
-    N = np.zeros((2,nn))
+    N = np.zeros((2, nn))
     
     for c in range(nn):
-        N[0,c] = nos.cell(c+1,0).value
-        N[1,c] = nos.cell(c+1,1).value
+        N[0, c] = nos.iat[c, 0]
+        N[1, c] = nos.iat[c, 1]
     
     ################################################## Ler a incidencia
-    incid = arquivo.sheet_by_name('Incidencia')
+    incid = pd.read_excel(entradaNome, sheet_name='Incidencia')
     
     # Numero de membros
-    nm = int(incid.cell(1,5).value)
+    nm = int(incid.iat[0, 5])
                  
     # Matriz de incidencia
-    Inc = np.zeros((nm,4))
+    Inc = np.zeros((nm, 4))
     
     for c in range(nm):
-        Inc[c,0] = int(incid.cell(c+1,0).value)
-        Inc[c,1] = int(incid.cell(c+1,1).value)
-        Inc[c,2] = incid.cell(c+1,2).value
-        Inc[c,3] = incid.cell(c+1,3).value
+        Inc[c, 0] = int(incid.iat[c, 0])
+        Inc[c, 1] = int(incid.iat[c, 1])
+        Inc[c, 2] = incid.iat[c, 2]
+        Inc[c, 3] = incid.iat[c, 3]
     
     ################################################## Ler as cargas
-    carg = arquivo.sheet_by_name('Carregamento')
+    carg = pd.read_excel(entradaNome, sheet_name='Carregamento')
     
     # Numero de cargas
-    nc = int(carg.cell(1,4).value)
+    nc = int(carg.iat[0, 4])
                  
     # Vetor carregamento
-    F = np.zeros((nn*2,1))
+    F = np.zeros((nn*2, 1))
     
     for c in range(nc):
-        no = carg.cell(c+1,0).value
-        xouy = carg.cell(c+1,1).value
-        GDL = int(no*2-(2-xouy)) 
-        F[GDL-1,0] = carg.cell(c+1,2).value
+        no = carg.iat[c, 0]
+        xouy = carg.iat[c, 1]
+        GDL = int(no*2 - (2 - xouy))
+        F[GDL-1, 0] = carg.iat[c, 2]
          
     ################################################## Ler restricoes
-    restr = arquivo.sheet_by_name('Restricao')
+    restr = pd.read_excel(entradaNome, sheet_name='Restricao')
     
     # Numero de restricoes
-    nr = int(restr.cell(1,3).value)
+    nr = int(restr.iat[0, 3])
                  
     # Vetor com os graus de liberdade restritos
-    R = np.zeros((nr,1))
+    R = np.zeros((nn*2, 1))
     
     for c in range(nr):
-        no = restr.cell(c+1,0).value
-        xouy = restr.cell(c+1,1).value
-        GDL = no*2-(2-xouy) 
-        R[c,0] = GDL-1
+        no = restr.iat[c, 0]
+        xouy = restr.iat[c, 1]
+        GDL = int(no*2 - (2 - xouy))
+        R[GDL-1, 0] = 1
+        
 
-
-    return nn,N,nm,Inc,nc,F,nr,R
+    return nn, N, nm, Inc, nc, F, nr, R
 
 def geraSaida(nome,Ft,Ut,Epsi,Fi,Ti):
     nome = nome + '.txt'

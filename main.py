@@ -2,6 +2,22 @@ from node import Node
 from element import Element
 import numpy as np
 from math import *
+from funcoesTermosol import *
+import xlrd
+
+entradaNome = 'entrada.xlsx'
+
+[nn,N,nm,Inc,nc,F,nr,R] = importa(entradaNome)
+
+print('nn = ', nn)
+print('N = ', N)
+print('nm = ', nm)
+print('Inc = ', Inc)
+print('nc = ', nc)
+print('F = ', F)
+print('nr = ', nr)
+print('R = ', R)
+#plota(N, Inc)
 
 node_1 = Node(1, 0, 0, 0, 0, True, False)
 node_1.dof_x_index = 0
