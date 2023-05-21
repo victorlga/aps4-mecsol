@@ -19,8 +19,10 @@ for i in range(nn):
     node.restriction_y = R[2*i + 1, 0]
     nodes.append(node)
 
+'''
 for node in nodes:
     print(f'Node {node.node_number}: ({node.node_x}, {node.node_y}), Fx = {node.load_x}, Fy = {node.load_y}, Rx = {node.restriction_x}, Ry = {node.restriction_y}')
+'''
 
 elements = []
 for i in range(nm):
@@ -31,9 +33,10 @@ for i in range(nm):
     element = Element(i, node_1, node_2, A, E)
     elements.append(element)
 
+'''
 for element in elements:
     print(f'Element {element.element_number}: ({element.node_1.node_number}, {element.node_2.node_number}), A = {element.area}, E = {element.youngs_module}, L = {element.length}, angle = {degrees(element.angle)}')
-
+'''
 
 ndof = 2 * nn
 K = np.zeros((ndof, ndof))
@@ -55,34 +58,68 @@ for node in nodes:
 
 F = np.reshape(F, (1, -1))
 
-#U = np.linalg.solve(K, F.T)
-
-print("Deslocamentos:")
-
 x0 = np.zeros(ndof)
 eps = 1e-6
 max_iter = 10000
 U = gauss_seidel(K_with_restriction, F.T, x0, eps, max_iter)
 U = np.reshape(U, (ndof, 1))
-print(U)
 
 for node in nodes:
     node.displacement_x = U[node.dof_x_index, 0]
     node.displacement_y = U[node.dof_y_index, 0]
-    print(f'Node {node.node_number}: ({node.displacement_x}, {node.displacement_y})')
+    #print(f'Node {node.node_number}: ({node.displacement_x}, {node.displacement_y})')
+
+# Reações
+print("Reações de apoio [N]:")
+reactions = np.zeros((ndof, 1))
+Ft = K @ U
+
+# Reações em cada nó
+for node in nodes:  
+    if node.restriction_x == 1:
+        reactions[node.dof_x_index, 0] = Ft[node.dof_x_index, 0]
+    if node.restriction_y == 1:
+        reactions[node.dof_y_index, 0] = Ft[node.dof_y_index, 0]
+
+# remove zeros desnecessários
+reactions = reactions[reactions != 0].reshape(-1, 1)
+print(reactions)
+print('\n')
+
+print("Deslocamentos [m]:")
+print(U)
+print('\n')
+
 
 # Deformações
-print("Deformações:")
+print("Deformações []:")
 deformations = np.zeros((nm, 1))
 for element in elements:
     #print(f'Element {element.element_number}: {element.get_deformation()}')
     deformations[element.element_number, 0] = element.get_deformation()
 
 print(deformations)
+print('\n')
 
 
-    
+# Forças internas
+print("Forças internas [N]:")
+internal_forces = np.zeros((nm, 1))
+for element in elements:
+    #print(f'Element {element.element_number}: {element.get_internal_force()}')
+    internal_forces[element.element_number, 0] = element.get_internal_force()
+
+print(internal_forces)
+print('\n')
 
 
+# Tensões
+print("Tensões internas [Pa]:")
+stresses = np.zeros((nm, 1))
+for element in elements:
+    #print(f'Element {element.element_number}: {element.get_internal_stress()}')
+    stresses[element.element_number, 0] = element.get_internal_stress()
+
+print(stresses)
 
 

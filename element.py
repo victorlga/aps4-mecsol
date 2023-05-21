@@ -47,3 +47,11 @@ class Element:
         m = np.array([-c, -s, c, s])
         u = np.array([self.node_1.displacement_x, self.node_1.displacement_y, self.node_2.displacement_x, self.node_2.displacement_y])
         return np.dot(m, u)/self.length
+
+    def get_internal_force(self) -> float:
+        return self.youngs_module * self.area * self.get_deformation()
+    
+    def get_internal_stress(self) -> float:
+        return self.get_internal_force() / self.area
+    
+    
