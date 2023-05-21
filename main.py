@@ -122,4 +122,21 @@ for element in elements:
 
 print(stresses)
 
+geraSaida("saida",reactions,U,deformations,internal_forces,stresses)
+
+#plota(N, Inc)
+N_novo = np.zeros((2, nn))
+
+for node in nodes:
+    N_novo[0, node.node_number] = node.node_x + node.displacement_x
+    N_novo[1, node.node_number] = node.node_y + node.displacement_y
+print(N)
+print(N_novo)
+
+
+#plota(N_novo, Inc)
+
+
+
+
 

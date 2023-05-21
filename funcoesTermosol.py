@@ -48,7 +48,6 @@ def plota(N,Inc):
 
         plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]],color='r',linewidth=3)
 
-
     plt.xlabel('x [m]')
     plt.ylabel('y [m]')
     plt.grid(True)
