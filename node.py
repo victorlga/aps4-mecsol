@@ -10,6 +10,8 @@ class Node:
     restriction_y: int
     dof_x_index: int
     dof_y_index: int
+    displacement_x: float
+    displacement_y: float
 
     def __init__(self, node_number: int, node_x, node_y) -> None:
         self.node_number = node_number
