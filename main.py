@@ -41,15 +41,17 @@ K = np.zeros((ndof, ndof))
 for element in elements:
     K[np.ix_([element.node_1.dof_x_index, element.node_1.dof_y_index, element.node_2.dof_x_index, element.node_2.dof_y_index], [element.node_1.dof_x_index, element.node_1.dof_y_index, element.node_2.dof_x_index, element.node_2.dof_y_index])] += element.stiffness_matrix
 
+K_with_restriction = K.copy()
+
 for node in nodes:
     if node.restriction_x == 1:
-        K[node.dof_x_index, :] = 0
-        K[:, node.dof_x_index] = 0
-        K[node.dof_x_index, node.dof_x_index] = 1
+        K_with_restriction[node.dof_x_index, :] = 0
+        K_with_restriction[:, node.dof_x_index] = 0
+        K_with_restriction[node.dof_x_index, node.dof_x_index] = 1
     if node.restriction_y == 1:
-        K[node.dof_y_index, :] = 0
-        K[:, node.dof_y_index] = 0
-        K[node.dof_y_index, node.dof_y_index] = 1
+        K_with_restriction[node.dof_y_index, :] = 0
+        K_with_restriction[:, node.dof_y_index] = 0
+        K_with_restriction[node.dof_y_index, node.dof_y_index] = 1
 
 F = np.reshape(F, (1, -1))
 
@@ -60,8 +62,27 @@ print("Deslocamentos:")
 x0 = np.zeros(ndof)
 eps = 1e-6
 max_iter = 10000
-U = gauss_seidel(K, F.T, x0, eps, max_iter)
+U = gauss_seidel(K_with_restriction, F.T, x0, eps, max_iter)
 U = np.reshape(U, (ndof, 1))
 print(U)
+
+for node in nodes:
+    node.displacement_x = U[node.dof_x_index, 0]
+    node.displacement_y = U[node.dof_y_index, 0]
+    print(f'Node {node.node_number}: ({node.displacement_x}, {node.displacement_y})')
+
+# Deformações
+print("Deformações:")
+deformations = np.zeros((nm, 1))
+for element in elements:
+    #print(f'Element {element.element_number}: {element.get_deformation()}')
+    deformations[element.element_number, 0] = element.get_deformation()
+
+print(deformations)
+
+
+    
+
+
 
 

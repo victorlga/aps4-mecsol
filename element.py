@@ -40,3 +40,10 @@ class Element:
         ])
         k *= self.youngs_module * self.area / self.length
         return k
+
+    def get_deformation(self) -> float:
+        c = np.cos(self.angle)
+        s = np.sin(self.angle)
+        m = np.array([-c, -s, c, s])
+        u = np.array([self.node_1.displacement_x, self.node_1.displacement_y, self.node_2.displacement_x, self.node_2.displacement_y])
+        return np.dot(m, u)/self.length
