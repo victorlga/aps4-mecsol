@@ -124,7 +124,7 @@ print(stresses)
 
 geraSaida("saida",reactions,U,deformations,internal_forces,stresses)
 
-#plota(N, Inc)
+plota(N, Inc)
 N_novo = np.zeros((2, nn))
 
 for node in nodes:
@@ -134,7 +134,7 @@ print(N)
 print(N_novo)
 
 
-#plota(N_novo, Inc)
+plota(N_novo, Inc)
 
 
 
