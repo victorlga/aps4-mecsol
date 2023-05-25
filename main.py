@@ -4,7 +4,7 @@ import numpy as np
 from math import *
 from funcoesTermosol import *
 
-entradaNome = 'entrada.xlsx'
+entradaNome = 'entrada_validacao.xlsx'
 
 [nn,N,nm,Inc,nc,F,nr,R] = importa(entradaNome)
 
@@ -19,10 +19,8 @@ for i in range(nn):
     node.restriction_y = R[2*i + 1, 0]
     nodes.append(node)
 
-'''
 for node in nodes:
     print(f'Node {node.node_number}: ({node.node_x}, {node.node_y}), Fx = {node.load_x}, Fy = {node.load_y}, Rx = {node.restriction_x}, Ry = {node.restriction_y}')
-'''
 
 elements = []
 for i in range(nm):
@@ -33,16 +31,17 @@ for i in range(nm):
     element = Element(i, node_1, node_2, A, E)
     elements.append(element)
 
-'''
+
 for element in elements:
-    print(f'Element {element.element_number}: ({element.node_1.node_number}, {element.node_2.node_number}), A = {element.area}, E = {element.youngs_module}, L = {element.length}, angle = {degrees(element.angle)}')
-'''
+    print(f'Element {element.element_number}: ({element.node_1.node_number}, {element.node_2.node_number}), A = {element.area}, E = {element.youngs_module}, L = {element.length}, sin = {element.sin}, cos = {element.cos}')
+
 
 ndof = 2 * nn
 K = np.zeros((ndof, ndof))
 
 for element in elements:
-    K[np.ix_([element.node_1.dof_x_index, element.node_1.dof_y_index, element.node_2.dof_x_index, element.node_2.dof_y_index], [element.node_1.dof_x_index, element.node_1.dof_y_index, element.node_2.dof_x_index, element.node_2.dof_y_index])] += element.stiffness_matrix
+    list_dofs = [element.node_1.dof_x_index, element.node_1.dof_y_index, element.node_2.dof_x_index, element.node_2.dof_y_index]
+    K[np.ix_(list_dofs, list_dofs)] += element.get_stiffness_matrix()
 
 K_with_restriction = K.copy()
 
@@ -122,7 +121,7 @@ for element in elements:
 
 print(stresses)
 
-geraSaida("saida",reactions,U,deformations,internal_forces,stresses)
+geraSaida("saidaValidacao",reactions,U,deformations,internal_forces,stresses)
 
 plota(N, Inc)
 N_novo = np.zeros((2, nn))
