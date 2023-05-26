@@ -30,7 +30,7 @@ geraSaida(nome,Ft,Ut,Epsi,Fi,Ti)
 -------------------------------------------------------------------------------
 
 """
-def plota(N,Inc):
+def plota(N,Inc,title):
     # Numero de membros
     nm = len(Inc[:,0])
     
@@ -46,11 +46,15 @@ def plota(N,Inc):
         n1 = int(Inc[i,0])
         n2 = int(Inc[i,1])        
 
-        plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]],color='r',linewidth=3)
+        plt.plot([N[0,n1-1],N[0,n2-1]],[N[1,n1-1],N[1,n2-1]],color='#0E6C84',linewidth=3)
+        fig.set_facecolor('#0E6C84')
 
-    plt.xlabel('x [m]')
-    plt.ylabel('y [m]')
+    plt.xlabel('x [m]', color='#EBFBFB')
+    plt.ylabel('y [m]', color='#EBFBFB')
+    plt.tick_params(axis='x', colors='#EBFBFB')
+    plt.tick_params(axis='y', colors='#EBFBFB')
     plt.grid(True)
+    plt.title(title, color='#EBFBFB')
     plt.axis('equal')
     plt.show()
 
@@ -71,6 +75,21 @@ def gauss_seidel(A, b, x0, epsilon, max_iterations):
         x = x_new
     return x
 
+def jacobi(A, b, x0, epsilon, max_iterations):
+    n = len(A)
+    x = x0.copy()
+
+    # Jacobi Method
+
+    for _ in range(max_iterations):
+        x_new = np.zeros(n)
+        for i in range(n):
+            s = np.dot(A[i, :i], x[:i]) + np.dot(A[i, i + 1:], x[i + 1:])
+            x_new[i] = (b[i] - s) / A[i, i]
+        if np.allclose(x, x_new, rtol=epsilon):
+            return x_new
+        x = x_new
+    return x
 
 def convert_xlsx_to_xls(input_file, output_file):
     import openpyxl

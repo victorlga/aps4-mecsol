@@ -31,7 +31,7 @@ for i in range(nm):
     element = Element(i, node_1, node_2, A, E)
     elements.append(element)
 
-
+print('\n')
 for element in elements:
     print(f'Element {element.element_number}: ({element.node_1.node_number}, {element.node_2.node_number}), A = {element.area}, E = {element.youngs_module}, L = {element.length}, sin = {element.sin}, cos = {element.cos}')
 
@@ -61,6 +61,7 @@ x0 = np.zeros(ndof)
 eps = 1e-6
 max_iter = 10000
 U = gauss_seidel(K_with_restriction, F.T, x0, eps, max_iter)
+#U = jacobi(K_with_restriction, F.T, x0, eps, max_iter)
 U = np.reshape(U, (ndof, 1))
 
 for node in nodes:
@@ -68,6 +69,7 @@ for node in nodes:
     node.displacement_y = U[node.dof_y_index, 0]
     #print(f'Node {node.node_number}: ({node.displacement_x}, {node.displacement_y})')
 
+print('\n')
 # Reações
 print("Reações de apoio [N]:")
 reactions = np.zeros((ndof, 1))
@@ -123,17 +125,14 @@ print(stresses)
 
 geraSaida("saidaValidacao",reactions,U,deformations,internal_forces,stresses)
 
-plota(N, Inc)
+plota(N, Inc, "Estrutura antes da aplicação das forças")
 N_novo = np.zeros((2, nn))
 
 for node in nodes:
-    N_novo[0, node.node_number] = node.node_x + node.displacement_x
-    N_novo[1, node.node_number] = node.node_y + node.displacement_y
-print(N)
-print(N_novo)
+    N_novo[0, node.node_number] = node.node_x + node.displacement_x*15.44028
+    N_novo[1, node.node_number] = node.node_y + node.displacement_y*15.44028
 
-
-plota(N_novo, Inc)
+plota(N_novo, Inc, "Estrutura após a aplicação das forças")
 
 
 
